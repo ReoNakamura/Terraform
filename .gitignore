@@ -1,0 +1,9 @@
+# Terraform関連の不要なファイル・ディレクトリを除外
+
+# 格階層の.terraformのディレクトリごと除外する 
+**/.terraform/
+
+# ローカルの .tfstate ファイルを無視する
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
