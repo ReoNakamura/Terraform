@@ -67,3 +67,74 @@ $ terraform fmt -recursive
 ## terraform validate
 構文エラーをチェックしてくれる
 
+# git　pushでエラーが起きた
+
+terraformで環境構築すると.terraform/providers/**とファイルが作成されて、このファイルが大きすぎてgitのpushのファイルサイズ100mbの上限を超過してしエラーが起きた。
+
+# 解決するために
+
+
+## 結論
+
+ .gitignoreで特定のfileを除外すると解決した
+
+
+
+## まずしたこと
+
+### 1. Git lfs のインストール
+
+これで100mbの上限をあげる事ができる。
+macなのでhomebrewでインストールできる
+
+``` bash
+brew install git-lfs
+```
+コミット履歴が残っているとpushしてもエラーになるのでコミットを取り消す
+
+``` bash
+$ cd {REPO} # リポジトリに移動
+$ git reset --soft 'HEAD^'  クォートで挟まないと実行できない
+```
+
+### 2. 再びコミットする
+
+Git lfsを使ったコミットをする
+
+``` bash
+$ git lfs track (大きいファイル)           # {大きいファイル} を登録
+Tracking {大きいファイル}
+$ git add .gitattributes # 登録したファイルをadd
+
+
+```
+こうするとファイルが作られて中に登録した大きいファイルが書かれている。  
+一度登録すればあとは普段通りにコミットすればよい  
+これでpushしたけど同じエラーで解決せず、別の方法を探した。
+
+## .gitignoreを使ってgitで管理したくないfileを登録しておく
+
+リポジトリに.gitignoreファイルを作成して
+
+```
+# Terraform関連の不要なファイル・ディレクトリを除外
+
+# 格階層の.terraformのディレクトリごと除外する 
+**/.terraform/
+
+# ローカルの .tfstate ファイルを無視する
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+
+```
+このように書く事で対象のファイルをgitに上げずローカルで管理できるようになる。  
+これでpushすると無事gitに上げる事ができた。
+
+### .gitignoreについて
+
+これまで存在も知らなかったけど開発でリモートとローカルどちらで管理するかファイルによって異なるため、メリット、デメリットを理解して判断する。
+今回の.terraform内のファイルはgitで管理する必要が無いみたいなので除外した。
+
+
