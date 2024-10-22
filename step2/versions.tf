@@ -18,7 +18,7 @@ provider "aws" {
   region = "ap-northeast-1"
   default_tags {
     tags = {
-      Env = "terraform-practice"
+      Env   = "terraform-practice"
       Owner = "nakamura"
     }
   }
